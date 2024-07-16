@@ -1,1 +1,207 @@
 
+class Node:
+    def __init__(self, data):
+        self.data = data
+        self.next = None
+
+class LinkedList:
+    def __init__(self):
+        self.head = None
+
+    def append(self, data):
+        new_node = Node(data)
+        if not self.head:
+            self.head = new_node
+            return
+        last = self.head
+        while last.next:
+            last = last.next
+        last.next = new_node
+
+    def to_list(self):
+        result = []
+        current = self.head
+        while current:
+            result.append(current.data)
+            current = current.next
+        return result
+
+    def from_list(self, lst):
+        self.head = None
+        for item in lst:
+            self.append(item)
+
+    def print_list(self):
+        current = self.head
+        while current:
+            print(current.data, end=" -> ")
+            current = current.next
+        print("None")
+
+
+def bubble_sort(linked_list):
+    end = None
+    while end != linked_list.head:
+        p = linked_list.head
+        while p.next != end:
+            q = p.next
+            if p.data > q.data:
+                p.data, q.data = q.data, p.data
+            p = p.next
+        end = p
+
+
+def selection_sort(linked_list):
+    start = linked_list.head
+    while start:
+        min_node = start
+        r = start.next
+        while r:
+            if min_node.data > r.data:
+                min_node = r
+            r = r.next
+        start.data, min_node.data = min_node.data, start.data
+        start = start.next
+
+
+def merge_sort(linked_list):
+    if linked_list.head is None or linked_list.head.next is None:
+        return linked_list
+
+    middle = get_middle(linked_list.head)
+    next_to_middle = middle.next
+    middle.next = None
+
+    left = LinkedList()
+    left.head = linked_list.head
+    right = LinkedList()
+    right.head = next_to_middle
+
+    left = merge_sort(left)
+    right = merge_sort(right)
+
+    sorted_list = LinkedList()
+    sorted_list.head = sorted_merge(left.head, right.head)
+    return sorted_list
+
+def get_middle(head):
+    if head is None:
+        return head
+    slow = head
+    fast = head
+    while fast.next and fast.next.next:
+        slow = slow.next
+        fast = fast.next.next
+    return slow
+
+def sorted_merge(a, b):
+    result = None
+    if a is None:
+        return b
+    if b is None:
+        return a
+    if a.data <= b.data:
+        result = a
+        result.next = sorted_merge(a.next, b)
+    else:
+        result = b
+        result.next = sorted_merge(a, b.next)
+    return result
+
+
+def insertion_sort(linked_list):
+    sorted_list = LinkedList()
+    current = linked_list.head
+    while current:
+        next_node = current.next
+        sorted_insert(sorted_list, current)
+        current = next_node
+    linked_list.head = sorted_list.head
+
+def sorted_insert(sorted_list, new_node):
+    if sorted_list.head is None or sorted_list.head.data >= new_node.data:
+        new_node.next = sorted_list.head
+        sorted_list.head = new_node
+    else:
+        current = sorted_list.head
+        while current.next and current.next.data < new_node.data:
+            current = current.next
+        new_node.next = current.next
+        current.next = new_node
+
+
+def quick_sort(linked_list):
+    linked_list.head = quick_sort_rec(linked_list.head)
+
+def quick_sort_rec(head):
+    if head is None or head.next is None:
+        return head
+    pivot = head
+    left_dummy = Node(0)
+    right_dummy = Node(0)
+    left = left_dummy
+    right = right_dummy
+    current = head.next
+    while current:
+        if current.data < pivot.data:
+            left.next = current
+            left = left.next
+        else:
+            right.next = current
+            right = right.next
+        current = current.next
+    left.next = None
+    right.next = None
+    left_dummy.next = quick_sort_rec(left_dummy.next)
+    right_dummy.next = quick_sort_rec(right_dummy.next)
+    return concatenate(left_dummy.next, pivot, right_dummy.next)
+
+def concatenate(left, pivot, right):
+    if left is None:
+        pivot.next = right
+        return pivot
+    head = left
+    while left.next:
+        left = left.next
+    left.next = pivot
+    pivot.next = right
+    return head
+
+
+input_data = [1, 17, 5, 34, 23, 54]
+
+# Create linked list
+ll = LinkedList()
+ll.from_list(input_data)
+
+# Bubble Sort
+bubble_sort(ll)
+print("Bubble Sort:", ll.to_list())
+
+# Reset linked list
+ll.from_list(input_data)
+
+# Selection Sort
+selection_sort(ll)
+print("Selection Sort:", ll.to_list())
+
+# Reset linked list
+ll.from_list(input_data)
+
+# Merge Sort
+ll = merge_sort(ll)
+print("Merge Sort:", ll.to_list())
+
+# Reset linked list
+ll.from_list(input_data)
+
+# Insertion Sort
+insertion_sort(ll)
+print("Insertion Sort:", ll.to_list())
+
+# Reset linked list
+ll.from_list(input_data)
+
+# Quick Sort
+quick_sort(ll)
+print("Quick Sort:", ll.to_list())
